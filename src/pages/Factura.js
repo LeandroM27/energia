@@ -3,10 +3,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import * as FaIcons from "react-icons/fa";
 import DateTimePicker from 'react-datetime-picker';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 function Factura({agregarDatos}) {
-    const [startDate, setStartDate] = useState(new Date());
-    const [endtDate, setEndDate] = useState(new Date());
+    const [startDate, setStartDate] = useState('');
+    const [endtDate, setEndDate] = useState('');
     const [cargoEnergia, setCargoEnergia] = useState('');
     const [cargoComer, setCargoComer] = useState('');
     const [distribucion, setDistribucion] = useState('');
@@ -34,28 +35,141 @@ function Factura({agregarDatos}) {
     "cobro_hasta": "2021-09-15T14:00"
      */
 
+    let convertir = (fecha) => {
+        
+        const partida = fecha.substring(5, 7);
+                
+        switch (partida) {
+            case "01":
+                return "Enero"
+            case "02":
+                return "Febrero"
+            case "03":
+                return "Marzo"
+            case "04":
+                return "Abril"
+            case "05":
+                return "Mayo"
+            case "06":
+                return "Junio"
+            case "07":
+                return "Julio"
+            case "08":
+                return "Agosto"
+            case "09":
+                return "Septiembre"
+            case "10":
+                return "Octubre"
+            case "11":
+                return "Noviembre"
+            case "12":
+                return "Diciembre"
+            default:
+                return "nope"
+        };
+    }
+
+    let validarEmail = (email) => {
+        const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return !re.test(email);
+    }
+
     const onSubmit = (e) => {
         e.preventDefault()
-        /*
+        
+        if (!startDate) {
+            alert('porfavor agrege fecha de inicio');
+            return;
+        }
+        if (!endtDate) {
+            alert('porfavor agrege fecha hasta');
+            return;
+        }
+        if (!cargoEnergia) {
+            alert('ingrese cargo energia');
+            return;
+        }
+        if (!cargoComer) {
+            alert('ingrese cargo comerzialiacion');
+            return;
+        }
+        if (!distribucion) {
+            alert('ingrese cargo distribucion');
+            return;
+        }
+        if (!tipoUso) {
+            alert('ingrese tipo de uso');
+            return;
+        }
+        if (!mesFact) {
+            alert('ingrese mes facturado');
+            return;
+        }
+        if (!diasFact) {
+            alert('ingrese dias facturados');
+            return;
+        }
+        if (!multi) {
+            alert('ingrese multiplicador');
+            return;
+        }
         if (!kwh) {
-          alert('por favor agrege kwh')
-          return
-        }*/
+            alert('ingrese kwh');
+            return;
+        }
+        if (!idDist) {
+            alert('ingrese distribuidor');
+            return;
+        }
+        if (!idUser) {
+            alert('ingrese usuario');
+            return;
+        }
+        if (!correo) {
+            alert('ingrese correo');
+            return;
+        }
+        if(convertir(mesFact) !== convertir(endtDate)){
+            alert('El mes facturado no coincide con el mes hasta');
+            return;
+        }
+
+        if(validarEmail(correo)){
+            alert('el correo que ah ingresado no es valido');
+            return;
+        }
         
         agregarDatos({ id_usuario:idUser, 
             id_distribuidor:idDist, 
-            kwh:kwh, 
+            kwh:parseFloat(kwh), 
             multiplicador:multi, 
             dias_facturados:diasFact, 
             mes_facturado:mesFact, 
             tipo_uso:tipoUso, 
-            cargo_distribucion:distribucion, 
-            cargo_comercializacion:cargoComer, 
-            cargo_energia:cargoEnergia, 
+            cargo_distribucion:parseFloat(distribucion), 
+            cargo_comercializacion:parseFloat(cargoComer), 
+            cargo_energia:parseFloat(cargoEnergia), 
             cobro_desde:startDate, 
             cobro_hasta:endtDate, 
             correo:correo });
-        //console.log(idUser, idDist, kwh, multi, diasFact, mesFact, tipoUso, distribucion, cargoComer, cargoEnergia, endtDate, startDate);
+
+
+            setStartDate('');
+            setEndDate('');
+            setCargoEnergia('');
+            setCargoComer('');
+            setDistribucion('');
+            setTipoUso('');
+            setMesFact('');
+            setDiasFact('');
+            setMulti('');
+            setKwh('');
+            setIdDist('');
+            setIdUser('');
+            setCorreo('');
+
+            alert('Se han insertado los datos correctamente');
+        
         
       }
 
@@ -98,34 +212,37 @@ function Factura({agregarDatos}) {
                                 <div className="row">
                                     <div className="col-4 form-group">
                                         <label for="distribucion">Cargo de energia</label>
-                                        <input type="text" 
+                                        <input type="number"
+                                        step="any" 
                                         className="form-control" 
                                         id="cargoEnergia" 
                                         placeholder="0.00"
                                         value={cargoEnergia}
-                                        onChange={(e) => setCargoEnergia(parseInt(e.target.value))}
+                                        onChange={(e) => setCargoEnergia((e.target.value))}
                                          />
                                     </div>
 
                                     <div className="col-4 form-group">
                                         <label for="comercializacion">Cargo de Comercializacion</label>
-                                        <input type="text" 
+                                        <input type="number"
+                                        step="any" 
                                         className="form-control" 
                                         id="comercializacion" 
                                         placeholder="0.00"
                                         value={cargoComer}
-                                        onChange={(e) => setCargoComer(parseInt(e.target.value))}
+                                        onChange={(e) => setCargoComer((e.target.value))}
                                         />
                                     </div>
 
                                     <div className="col-4 form-group">
                                         <label for="energia">Cargo de distribucion</label>
-                                        <input type="text" 
+                                        <input type="number"
+                                        step="any" 
                                         className="form-control" 
                                         id="distribucion" 
                                         placeholder="0.00"
                                         value={distribucion}
-                                        onChange={(e) => setDistribucion(parseInt(e.target.value))}
+                                        onChange={(e) => setDistribucion((e.target.value))}
                                         />
                                     </div>
                                 </div><br />
@@ -147,7 +264,7 @@ function Factura({agregarDatos}) {
                                         <select className="form-select" 
                                         aria-label="Default select example"
                                         onChange={(e) =>  setMesFact(e.target.value)}>
-                                            <option selected>Scuff pero sirve</option>
+                                            <option selected>Seleccione mes de facturacion</option>
                                             <option value="2021-01-01T14:00">enero</option>
                                             <option value="2021-02-01T14:00">febrero</option>
                                             <option value="2021-03-01T14:00">marzo</option>
@@ -165,13 +282,15 @@ function Factura({agregarDatos}) {
 
                                     <div className="col-4 form-group">
                                         <label for="consumo">Dias de Facturacion</label>
-                                        <input type="text" 
-                                        className="form-control" 
-                                        id="diasFact" 
-                                        placeholder="0.00"
-                                        value={diasFact}
-                                        onChange={(e) => setDiasFact(parseInt(e.target.value))} 
-                                        />
+                                        <select className="form-select" 
+                                        aria-label="Default select example"
+                                        onChange={(e) =>  setDiasFact(parseInt(e.target.value))}>
+                                            <option selected>Seleccione dias en factura</option>
+                                            <option value="28">28</option>
+                                            <option value="30">30</option>
+                                            <option value="31">31</option>
+                    
+                                        </select>
                                     </div>
 
                                 </div><br />
@@ -191,12 +310,13 @@ function Factura({agregarDatos}) {
 
                                     <div className="col-4 form-group">
                                         <label for="consumo">Kwh</label>
-                                        <input type="text" 
+                                        <input type="number"
+                                        step="any" 
                                         className="form-control" 
                                         id="kwh" 
                                         placeholder="0.00"
                                         value={kwh}
-                                        onChange={(e) => setKwh(parseInt(e.target.value))} 
+                                        onChange={(e) => setKwh(e.target.value)} 
                                         />
                                     </div>
 
@@ -226,7 +346,7 @@ function Factura({agregarDatos}) {
                                         <select className="form-select" 
                                         aria-label="Default select example"
                                         onChange={(e) => setIdUser(parseInt(e.target.value))}>
-                                            <option selected>Quemado para mientras</option>
+                                            <option selected>Se va a popular con la base</option>
                                             <option value="123456">random1</option>
                                             <option value="654321">random2</option>
                                             
@@ -238,7 +358,7 @@ function Factura({agregarDatos}) {
                                         <input type="text" 
                                         className="form-control" 
                                         id="kwh" 
-                                        placeholder="correo"
+                                        placeholder="correo asosiado"
                                         value={correo}
                                         onChange={(e) => setCorreo(e.target.value)} 
                                         />
@@ -261,6 +381,23 @@ function Factura({agregarDatos}) {
             </main>
         </div>
     )
+}
+
+
+Factura.propTypes = {
+    startDate: PropTypes.string,
+    endtDate: PropTypes.string,
+    cargoEnergia: PropTypes.number,
+    cargoComer: PropTypes.number,
+    distribucion: PropTypes.number,
+    tipoUso: PropTypes.string,
+    mesFact: PropTypes.string,
+    diasFact: PropTypes.number,
+    multi: PropTypes.number,
+    kwh: PropTypes.number,
+    idDist: PropTypes.number,
+    idUser: PropTypes.number,
+    correo: PropTypes.string
 }
 
 export default Factura
